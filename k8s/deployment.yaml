@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-kafka-api
+  labels:
+    app: express-kafka-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: express-kafka-api
+  template:
+    metadata:
+      labels:
+        app: express-kafka-api
+    spec:
+      containers:
+      - name: express-kafka-api
+        image: express-kafka-api:1.0.0
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: express-kafka-config
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10

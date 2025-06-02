@@ -1,0 +1,32 @@
+{
+  "name": "express-kafka-opentelemetry-api",
+  "version": "1.0.0",
+  "description": "Express.js backend with Kafka, OpenTelemetry and Swagger",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "kafkajs": "^2.2.4",
+    "cloudevents": "^7.0.1",
+    "axios": "^1.4.0",
+    "swagger-ui-express": "^5.0.0",
+    "yamljs": "^0.3.0",
+    "@opentelemetry/sdk-node": "^1.15.0",
+    "@opentelemetry/api": "^1.6.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.37.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.41.0",
+    "@opentelemetry/instrumentation-express": "^0.33.0",
+    "@opentelemetry/instrumentation-http": "^0.41.0",
+    "@opentelemetry/semantic-conventions": "^1.15.0",
+    "pino": "^8.14.1",
+    "pino-pretty": "^10.0.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Express Kafka OpenTelemetry API
+  description: API for Kafka message publishing and HTTP request delegation with OpenTelemetry integration
+  version: 1.0.0
+
+servers:
+  - url: /
+    description: Local server
+
+paths:
+  /publish:
+    post:
+      summary: Publish message to Kafka topic
+      description: Receives a topic name and message and publishes it to Kafka in CloudEvents format
+      tags:
+        - Messaging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+            example:
+              topic: "user-events"
+              message: {
+                "userId": "12345",
+                "action": "login",
+                "timestamp": "2023-06-10T15:00:00Z"
+              }
+      responses:
+        '202':
+          description: Message accepted for publishing
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /delegate:
+    post:
+      summary: Delegate HTTP request
+      description: Forwards an HTTP request to the specified URL with the provided method and body
+      tags:
+        - Proxy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DelegateRequest'
+            example:
+              url: "https://api.example.com/data"
+              method: "POST"
+              body: {
+                "key": "value"
+              }
+      responses:
+        '200':
+          description: Successful response from delegated request
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Response from the delegated request
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      tags:
+        - System
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  uptime:
+                    type: number
+                    example: 3600
+
+components:
+  schemas:
+    PublishRequest:
+      type: object
+      required:
+        - topic
+        - message
+      properties:
+        topic:
+          type: string
+          description: Name of the Kafka topic
+        message:
+          type: object
+          description: Message to be published (can be any valid JSON object)
+    
+    DelegateRequest:
+      type: object
+      required:
+        - url
+        - method
+      properties:
+        url:
+          type: string
+          description: URL to which the request will be delegated
+        method:
+          type: string
+          enum: [GET, POST]
+          description: HTTP method to use for the delegated request
+        body:
+          type: object
+          description: Request body for POST requests (ignored for GET requests)
+    
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        statusCode:
+          type: integer
+          description: HTTP status code
